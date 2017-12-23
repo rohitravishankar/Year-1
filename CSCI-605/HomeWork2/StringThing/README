@@ -1,0 +1,12 @@
+Write a program that
+•
+finds out the character distribution. Upper case and lower case characters have to be treated as the same character.
+•
+All lines needed ’added together’
+•
+Find all palindromes. A palindrome may be on two different array entries. For example the following text has
+static String[] aText = {
+                "ab",
+                "bab",
+         };
+the following palindromes: bb,bab, abba.	

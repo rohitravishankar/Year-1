@@ -1,0 +1,13 @@
+The file test1.txt tests for the case when all the cows are within the range of only 1 paintball each.
+So, the resulting graph has multiple paintball vertices which are connected to only to a single cow vertex each.
+The program display only 1 paintball result as there is a tie.
+
+The file test2.txt tests for the case when none of the cows are within the range of any paintball.
+The result has none of the cows painted.
+
+The file test3.txt tests for the case when all the cows are within the range of some paintball and all the paintballs are connected.
+The resulting graph has all the paintballs connected and all paintballs being triggered.
+
+Negative values don't get considered as a vertex.
+
+

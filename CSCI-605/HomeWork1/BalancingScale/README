@@ -1,0 +1,7 @@
+Objective: Designing, implementing, and testing of a simple algorithm.
+
+You have the following weights: 1g, 2g, 5g, 10g, 10g, 25g, 25g, 25g, 50g, and you would to know if you can weigh 30g using a balancing scale.. Write a program which can find out the answer.
+•You can use arrays, and you have to use an iterative algorithm.
+•You can hardcode all values in your program.
+•You cannot use any classes besides the String class.
+Your program should only print out: the weights used if a it can be done or no. For example, if using the above weights: 30g yes; used weights = 5g 25g.

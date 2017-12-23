@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with JFLAP 6.4.--><structure>
+	<type>fa</type>
+	<automaton>
+		<!--The list of states.-->
+		<state id="0" name="q0">
+			<x>97.0</x>
+			<y>69.0</y>
+			<initial/>
+			<final/>
+		</state>
+		<state id="1" name="q1">
+			<x>426.0</x>
+			<y>60.0</y>
+		</state>
+		<state id="2" name="q2">
+			<x>261.0</x>
+			<y>209.0</y>
+		</state>
+		<!--The list of transitions.-->
+		<transition>
+			<from>0</from>
+			<to>0</to>
+			<read>0 1 1</read>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>0</to>
+			<read>0 0 1</read>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>0</to>
+			<read>0 1 0</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>0</to>
+			<read>1 1 1 0</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>2</to>
+			<read>0 1 1 1</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>2</to>
+			<read>0 1 0 0</read>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>1</to>
+			<read>0 0 1</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>0</to>
+			<read>1 0 1 1</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>1</to>
+			<read>1 0 0</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>0</to>
+			<read>0 0 1 0</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>2</to>
+			<read>0 0 0 0 1 1 1 1 </read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>1</to>
+			<read>1 0 1</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>1</to>
+			<read>1 1 0</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>2</to>
+			<read>0 0 1 1 0 0 1 1</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>2</to>
+			<read>0 1 0 1 0 1 0 1</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>2</to>
+			<read>0 0 1 0</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>0</to>
+			<read>1 1 0</read>
+		</transition>
+	</automaton>
+</structure>

@@ -1,0 +1,117 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module pretee</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>pretee</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/course/csci603/Topics/Trees/Lab/doc/pretee.py">/home/course/csci603/Topics/Trees/Lab/doc/pretee.py</a></font></td></tr></table>
+    <p><tt>CSCI-603&nbsp;<a href="#PreTee">PreTee</a>&nbsp;Lab<br>
+Author:&nbsp;Sean&nbsp;Strout&nbsp;@&nbsp;RIT&nbsp;CS<br>
+Author:&nbsp;{YOUR&nbsp;NAMES&nbsp;HERE}<br>
+&nbsp;<br>
+The&nbsp;main&nbsp;program&nbsp;and&nbsp;class&nbsp;for&nbsp;a&nbsp;prefix&nbsp;expression&nbsp;interpreter&nbsp;of&nbsp;the<br>
+<a href="#PreTee">PreTee</a>&nbsp;language.&nbsp;&nbsp;See&nbsp;prog1.pre&nbsp;for&nbsp;a&nbsp;full&nbsp;example.<br>
+&nbsp;<br>
+Usage:&nbsp;python3&nbsp;pretee.py&nbsp;source-file.pre</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="assignment_node.html">assignment_node</a><br>
+<a href="literal_node.html">literal_node</a><br>
+</td><td width="25%" valign=top><a href="math_node.html">math_node</a><br>
+<a href="print_node.html">print_node</a><br>
+</td><td width="25%" valign=top><a href="runtime_error.html">runtime_error</a><br>
+<a href="syntax_error.html">syntax_error</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="variable_node.html">variable_node</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="pretee.html#PreTee">PreTee</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PreTee">class <strong>PreTee</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>The&nbsp;<a href="#PreTee">PreTee</a>&nbsp;class&nbsp;consists&nbsp;of:<br>
+:slot&nbsp;srcFile:&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;source&nbsp;file&nbsp;(string)<br>
+:slot&nbsp;symTbl:&nbsp;the&nbsp;symbol&nbsp;table&nbsp;(dictionary:&nbsp;key=string,&nbsp;value=int)<br>
+:slot&nbsp;parseTrees:&nbsp;a&nbsp;list&nbsp;of&nbsp;the&nbsp;root&nbsp;nodes&nbsp;for&nbsp;valid,&nbsp;non-commented<br>
+&nbsp;&nbsp;&nbsp;&nbsp;line&nbsp;of&nbsp;code<br>
+:slot&nbsp;lineNum:&nbsp;&nbsp;when&nbsp;parsing,&nbsp;the&nbsp;current&nbsp;line&nbsp;number&nbsp;in&nbsp;the&nbsp;source<br>
+&nbsp;&nbsp;&nbsp;&nbsp;file&nbsp;(int)<br>
+:slot&nbsp;syntaxError:&nbsp;indicates&nbsp;whether&nbsp;a&nbsp;syntax&nbsp;error&nbsp;occurred&nbsp;during<br>
+&nbsp;&nbsp;&nbsp;&nbsp;parsing&nbsp;(bool).&nbsp;&nbsp;If&nbsp;there&nbsp;is&nbsp;a&nbsp;syntax&nbsp;error,&nbsp;the&nbsp;parse&nbsp;trees&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;not&nbsp;be&nbsp;evaluated<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PreTee-__init__"><strong>__init__</strong></a>(self, srcFile)</dt><dd><tt>Initialize&nbsp;the&nbsp;parser.<br>
+:param&nbsp;srcFile:&nbsp;the&nbsp;source&nbsp;file&nbsp;(string)</tt></dd></dl>
+
+<dl><dt><a name="PreTee-emit"><strong>emit</strong></a>(self)</dt><dd><tt>Prints&nbsp;an&nbsp;infix&nbsp;string&nbsp;representation&nbsp;of&nbsp;the&nbsp;source&nbsp;code&nbsp;that<br>
+is&nbsp;contained&nbsp;as&nbsp;root&nbsp;nodes&nbsp;in&nbsp;parseTree.<br>
+:return&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="PreTee-evaluate"><strong>evaluate</strong></a>(self)</dt><dd><tt>Prints&nbsp;the&nbsp;results&nbsp;of&nbsp;evaluating&nbsp;the&nbsp;root&nbsp;notes&nbsp;in&nbsp;parseTree.<br>
+This&nbsp;can&nbsp;be&nbsp;viewed&nbsp;as&nbsp;executing&nbsp;the&nbsp;compiled&nbsp;code.&nbsp;&nbsp;If&nbsp;a<br>
+runtime&nbsp;error&nbsp;happens,&nbsp;execution&nbsp;halts.<br>
+:exception:&nbsp;runtime_error.RunTimeError&nbsp;may&nbsp;be&nbsp;raised&nbsp;if&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;parse&nbsp;tree&nbsp;encounters&nbsp;a&nbsp;runtime&nbsp;error<br>
+:return&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="PreTee-parse"><strong>parse</strong></a>(self)</dt><dd><tt>The&nbsp;public&nbsp;parse&nbsp;is&nbsp;responsible&nbsp;for&nbsp;looping&nbsp;over&nbsp;the&nbsp;lines&nbsp;of<br>
+source&nbsp;code&nbsp;and&nbsp;constructing&nbsp;the&nbsp;parseTree,&nbsp;as&nbsp;a&nbsp;series&nbsp;of<br>
+calls&nbsp;to&nbsp;the&nbsp;helper&nbsp;function&nbsp;that&nbsp;are&nbsp;appended&nbsp;to&nbsp;this&nbsp;list.<br>
+It&nbsp;needs&nbsp;to&nbsp;handle&nbsp;and&nbsp;display&nbsp;any&nbsp;syntax_error.SyntaxError<br>
+exceptions&nbsp;that&nbsp;get&nbsp;raised.<br>
+:&nbsp;return&nbsp;None</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>ADD_TOKEN</strong> = '+'</dl>
+
+<dl><dt><strong>ASSIGNMENT_TOKEN</strong> = '='</dl>
+
+<dl><dt><strong>COMMENT_TOKEN</strong> = '#'</dl>
+
+<dl><dt><strong>DIVIDE_TOKEN</strong> = '//'</dl>
+
+<dl><dt><strong>MATH_TOKENS</strong> = ('+', '-', '*', '//')</dl>
+
+<dl><dt><strong>MULTIPLY_TOKEN</strong> = '*'</dl>
+
+<dl><dt><strong>PRINT_TOKEN</strong> = '@'</dl>
+
+<dl><dt><strong>SUBTRACT_TOKEN</strong> = '-'</dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>The&nbsp;main&nbsp;function&nbsp;prompts&nbsp;for&nbsp;the&nbsp;source&nbsp;file,&nbsp;and&nbsp;then&nbsp;does:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1.&nbsp;Compiles&nbsp;the&nbsp;prefix&nbsp;source&nbsp;code&nbsp;into&nbsp;parse&nbsp;trees<br>
+&nbsp;&nbsp;&nbsp;&nbsp;2.&nbsp;Prints&nbsp;the&nbsp;source&nbsp;code&nbsp;as&nbsp;infix<br>
+&nbsp;&nbsp;&nbsp;&nbsp;3.&nbsp;Executes&nbsp;the&nbsp;compiled&nbsp;code<br>
+:return:&nbsp;None</tt></dd></dl>
+</td></tr></table>
+</body></html>

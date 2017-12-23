@@ -1,0 +1,15 @@
+Objective: Designing, implementing, and testing of a simple algorithm.
+Given is the following sum:
+f∞(x) = ∑-x^i, for i = 0 to ∞
+
+For a given n this can be written as:
+fn(x) = ∑-x^i, for i = 0 to n
+
+Write a program which calculates
+|fn(0.5) - f∞(0.5)| < delta, delta >0
+
+Requirements:
+•you need to print our the approximation of f(x), n, and the last term added.
+•your calculation methods signature must be static private void f(double x).
+•you can only use: variables of basic types and loops loops.
+•you can also not use anything from java.lang.Math.

@@ -1,0 +1,1 @@
+Given a user input for the largest size of polygon, between 3 and 8, create a recursive polygon structure reducing the number of sides till it is greater than 3. The polygon must be filled or unfilled based on the user input. 

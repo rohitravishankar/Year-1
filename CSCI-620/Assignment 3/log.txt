@@ -1,0 +1,3184 @@
+Rohit Ravishankar
+rr9105@rit.edu
+
+------------------------------------------------------------
+R Session
+------------------------------------------------------------
+library(rattle)
+rattle()
+r <- read.csv("/Users/rohitravishankar/Desktop/Big Data/Assignment 3/h1b-disclosure-dataset/H1B Disclosure Dataset Files/File 1 - H1B Dataset.csv", header = TRUE)
+tail(r, N=1)
+View(tail(r, N=1))
+ds <- weather
+ds$RRC_Temp3pm <- scale(ds$Temp3pm)
+library(reshape)
+ds$R01_Temp3pm <- rescaler(ds$Temp3pm, "range")
+library(reshape)
+ds$RMD_Temp3pm <- rescaler(ds$Temp3pm, "robust")
+ds$RLG_Temp3pm <- log(ds$Temp3pm)
+ds$RLG_Temp3pm[ds$RLG_Temp3pm == -Inf] <- NA
+library(reshape)
+ds$RRK_Temp3pm <- rescaler(ds$Temp3pm, "rank")
+
+
+
+
+------------------------------------------------------------
+Rattle Session
+------------------------------------------------------------
+
+# Rattle is Copyright (c) 2006-2017 Togaware Pty Ltd.
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:00:28 x86_64-apple-darwin15.6.0 
+
+# Rattle version 5.0.14 user 'rohitravishankar'
+
+# This log file captures all Rattle interactions as R commands. 
+
+# Export this log to a file using the Export button or the Tools menu to save a log 
+# of all your activity. This facilitates repeatability. For example, exporting 
+# to a file called 'myrf01.R' will allow you to type in the R Console 
+# the command source('myrf01.R') and so repeat all actions automatically. 
+# Generally, you will want to edit the file to suit your needs. You can also directly 
+# edit this current log in place to record additional information before exporting. 
+ 
+# Saving and loading projects also retains this log.
+
+# We begin by loading the required libraries.
+
+library(rattle)   # To access the weather dataset and utility commands.
+library(magrittr) # For the %>% and %<>% operators.
+
+# This log generally records the process of building a model. However, with very 
+# little effort the log can be used to score a new dataset. The logical variable 
+# 'building' is used to toggle between generating transformations, as when building 
+# a model, and simply using the transformations, as when scoring a dataset.
+
+building <- TRUE
+scoring  <- ! building
+
+
+# A pre-defined value is used to reset the random seed so that results are repeatable.
+
+crv$seed <- 42 
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:00:55 x86_64-apple-darwin15.6.0 
+
+# Load the data.
+
+crs$dataset <- read.csv("file:///Users/rohitravishankar/Desktop/Big Data/Assignment 3/h1b-disclosure-dataset/H1B Disclosure Dataset Files/1. Master H1B Dataset.csv", na.strings=c(".", "NA", "", "?"), strip.white=TRUE, encoding="UTF-8")
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:01:09 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# Build the training/validate/test datasets.
+
+set.seed(crv$seed) 
+crs$nobs <- nrow(crs$dataset) # 528134 observations 
+crs$sample <- crs$train <- sample(nrow(crs$dataset), 0.7*crs$nobs) # 369693 observations
+crs$validate <- sample(setdiff(seq_len(nrow(crs$dataset)), crs$train), 0.15*crs$nobs) # 79220 observations
+crs$test <- setdiff(setdiff(seq_len(nrow(crs$dataset)), crs$train), crs$validate) # 79221 observations
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "NAICS_CODE",
+     "TOTAL_WORKERS", "FULL_TIME_POSITION", "PREVAILING_WAGE", "PW_UNIT_OF_PAY",
+     "PW_SOURCE", "PW_SOURCE_YEAR", "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_FROM",
+     "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "NAICS_CODE", "TOTAL_WORKERS",
+     "PREVAILING_WAGE", "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_FROM", "WAGE_RATE_OF_PAY_TO")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- NULL
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:01:39 x86_64-apple-darwin15.6.0 
+
+# Perform missing value imputation. 
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:01:39 x86_64-apple-darwin15.6.0 
+
+# Transform variables by imputing missing values. 
+
+# Impute NAICS_CODE.
+
+crs$dataset[["IZR_NAICS_CODE"]] <- crs$dataset[["NAICS_CODE"]]
+
+# Change all NAs to 0.
+
+if (building)
+{
+  crs$dataset[["IZR_NAICS_CODE"]][is.na(crs$dataset[["NAICS_CODE"]])] <- 0
+}
+
+# When scoring, transform using the training data parameters:
+
+if (scoring)
+{
+  crs$dataset[["IZR_NAICS_CODE"]][is.na(crs$dataset[["NAICS_CODE"]])] <- 0
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:01:41 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PREVAILING_WAGE", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_YEAR", "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_FROM", "WAGE_RATE_OF_PAY_TO",
+     "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR", "WORKSITE_STATE",
+     "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PREVAILING_WAGE",
+     "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_FROM", "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- "NAICS_CODE"
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:02:09 x86_64-apple-darwin15.6.0 
+
+# CLEANUP the Dataset 
+
+# Remove specific variables from the dataset.
+
+crs$dataset$NAICS_CODE <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:02:12 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PREVAILING_WAGE", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_YEAR", "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_FROM", "WAGE_RATE_OF_PAY_TO",
+     "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR", "WORKSITE_STATE",
+     "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PREVAILING_WAGE",
+     "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_FROM", "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- NULL
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:02:44 x86_64-apple-darwin15.6.0 
+
+# Save the project data (variable crs) to file.
+
+save(crs, file="/Users/rohitravishankar/Desktop/Big Data/Assignment 3/h1b-disclosure-dataset/1. Master H1B Dataset.rattle", compress=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:06 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# Rescale WAGE_RATE_OF_PAY_FROM.
+
+crs$dataset[["RRC_WAGE_RATE_OF_PAY_FROM"]] <- crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]
+
+# Recenter and rescale the data around 0.
+
+if (building)
+{
+  crs$dataset[["RRC_WAGE_RATE_OF_PAY_FROM"]] <-
+    scale(crs$dataset[["WAGE_RATE_OF_PAY_FROM"]])[,1]
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["RRC_WAGE_RATE_OF_PAY_FROM"]] <- (crs$dataset[["WAGE_RATE_OF_PAY_FROM"]] - 81618.454065)/42468.519319
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:08 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PREVAILING_WAGE", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_YEAR", "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY",
+     "H.1B_DEPENDENT", "WILLFUL_VIOLATOR", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PREVAILING_WAGE",
+     "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- "WAGE_RATE_OF_PAY_FROM"
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:12 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# The 'reshape' package provides the 'rescaler' function.
+
+library(reshape, quietly=TRUE)
+
+# Rescale WAGE_RATE_OF_PAY_FROM.
+
+crs$dataset[["R01_WAGE_RATE_OF_PAY_FROM"]] <- crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]
+
+# Rescale to [0,1].
+
+if (building)
+{
+  crs$dataset[["R01_WAGE_RATE_OF_PAY_FROM"]] <-  rescaler(crs$dataset[["WAGE_RATE_OF_PAY_FROM"]], "range")
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["R01_WAGE_RATE_OF_PAY_FROM"]] <- (crs$dataset[["WAGE_RATE_OF_PAY_FROM"]] - 0.000000)/abs(1350000.000000 - 0.000000)
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:14 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PREVAILING_WAGE", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_YEAR", "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY",
+     "H.1B_DEPENDENT", "WILLFUL_VIOLATOR", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PREVAILING_WAGE",
+     "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM",
+     "R01_WAGE_RATE_OF_PAY_FROM")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- "WAGE_RATE_OF_PAY_FROM"
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:16 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# The 'reshape' package provides the 'rescaler' function.
+
+library(reshape, quietly=TRUE)
+
+# Rescale WAGE_RATE_OF_PAY_FROM.
+
+crs$dataset[["RMD_WAGE_RATE_OF_PAY_FROM"]] <- crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]
+
+# Rescale by subtracting median and dividing by median abs deviation.
+
+if (building)
+{
+  crs$dataset[["RMD_WAGE_RATE_OF_PAY_FROM"]] <-  rescaler(crs$dataset[["WAGE_RATE_OF_PAY_FROM"]], "robust")
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["RMD_WAGE_RATE_OF_PAY_FROM"]] <- (crs$dataset[["WAGE_RATE_OF_PAY_FROM"]] - 75000.000000)/22239.000000
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:19 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PREVAILING_WAGE", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_YEAR", "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY",
+     "H.1B_DEPENDENT", "WILLFUL_VIOLATOR", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PREVAILING_WAGE",
+     "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM",
+     "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- "WAGE_RATE_OF_PAY_FROM"
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:22 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# Rescale WAGE_RATE_OF_PAY_FROM.
+
+crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]] <- crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]
+
+# Take a log transform of the variable - treat -Inf as NA.
+
+if (building)
+{
+  crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]] <-  log(crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]) 
+  crs$dataset[crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]] == -Inf & ! is.na(crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]]), "RLG_WAGE_RATE_OF_PAY_FROM"] <- NA
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]] <-  log(crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]) 
+  crs$dataset[crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]] == -Inf & ! is.na(crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]]), "RLG_WAGE_RATE_OF_PAY_FROM"] <- NA
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:24 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PREVAILING_WAGE", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_YEAR", "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY",
+     "H.1B_DEPENDENT", "WILLFUL_VIOLATOR", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM",
+     "RLG_WAGE_RATE_OF_PAY_FROM")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PREVAILING_WAGE",
+     "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM",
+     "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- "WAGE_RATE_OF_PAY_FROM"
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:29 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# The 'reshape' package provides the 'rescaler' function.
+
+library(reshape, quietly=TRUE)
+
+# Rescale WAGE_RATE_OF_PAY_FROM.
+
+crs$dataset[["RRK_WAGE_RATE_OF_PAY_FROM"]] <- crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]
+
+# Convert values to ranks.
+
+if (building)
+{
+  crs$dataset[["RRK_WAGE_RATE_OF_PAY_FROM"]] <-  rescaler(crs$dataset[["WAGE_RATE_OF_PAY_FROM"]], "rank")
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:31 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PREVAILING_WAGE", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_YEAR", "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY",
+     "H.1B_DEPENDENT", "WILLFUL_VIOLATOR", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM",
+     "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PREVAILING_WAGE",
+     "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM",
+     "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- "WAGE_RATE_OF_PAY_FROM"
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:38 x86_64-apple-darwin15.6.0 
+
+# Save the project data (variable crs) to file.
+
+save(crs, file="/Users/rohitravishankar/Desktop/Big Data/Assignment 3/h1b-disclosure-dataset/1. Master H1B Dataset.rattle", compress=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:49 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# Rescale PREVAILING_WAGE.
+
+crs$dataset[["RRC_PREVAILING_WAGE"]] <- crs$dataset[["PREVAILING_WAGE"]]
+
+# Recenter and rescale the data around 0.
+
+if (building)
+{
+  crs$dataset[["RRC_PREVAILING_WAGE"]] <-
+    scale(crs$dataset[["PREVAILING_WAGE"]])[,1]
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["RRC_PREVAILING_WAGE"]] <- (crs$dataset[["PREVAILING_WAGE"]] - 71674.254471)/31996.910281
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:52 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE", "PW_SOURCE_YEAR",
+     "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT",
+     "WILLFUL_VIOLATOR", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE",
+     "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM",
+     "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:57 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# The 'reshape' package provides the 'rescaler' function.
+
+library(reshape, quietly=TRUE)
+
+# Rescale PREVAILING_WAGE.
+
+crs$dataset[["R01_PREVAILING_WAGE"]] <- crs$dataset[["PREVAILING_WAGE"]]
+
+# Rescale to [0,1].
+
+if (building)
+{
+  crs$dataset[["R01_PREVAILING_WAGE"]] <-  rescaler(crs$dataset[["PREVAILING_WAGE"]], "range")
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["R01_PREVAILING_WAGE"]] <- (crs$dataset[["PREVAILING_WAGE"]] - 0.000000)/abs(414007.000000 - 0.000000)
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:03:59 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE", "PW_SOURCE_YEAR",
+     "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT",
+     "WILLFUL_VIOLATOR", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE",
+     "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM",
+     "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:04:02 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# The 'reshape' package provides the 'rescaler' function.
+
+library(reshape, quietly=TRUE)
+
+# Rescale WAGE_RATE_OF_PAY_FROM.
+
+crs$dataset[["RMD_WAGE_RATE_OF_PAY_FROM"]] <- crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]
+
+# Rescale by subtracting median and dividing by median abs deviation.
+
+if (building)
+{
+  crs$dataset[["RMD_WAGE_RATE_OF_PAY_FROM"]] <-  rescaler(crs$dataset[["WAGE_RATE_OF_PAY_FROM"]], "robust")
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["RMD_WAGE_RATE_OF_PAY_FROM"]] <- (crs$dataset[["WAGE_RATE_OF_PAY_FROM"]] - 75000.000000)/22239.000000
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:04:05 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE", "PW_SOURCE_YEAR",
+     "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT",
+     "WILLFUL_VIOLATOR", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE",
+     "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM",
+     "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:04:07 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# Rescale WAGE_RATE_OF_PAY_FROM.
+
+crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]] <- crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]
+
+# Take a log transform of the variable - treat -Inf as NA.
+
+if (building)
+{
+  crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]] <-  log(crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]) 
+  crs$dataset[crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]] == -Inf & ! is.na(crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]]), "RLG_WAGE_RATE_OF_PAY_FROM"] <- NA
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]] <-  log(crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]) 
+  crs$dataset[crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]] == -Inf & ! is.na(crs$dataset[["RLG_WAGE_RATE_OF_PAY_FROM"]]), "RLG_WAGE_RATE_OF_PAY_FROM"] <- NA
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:04:10 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE", "PW_SOURCE_YEAR",
+     "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT",
+     "WILLFUL_VIOLATOR", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE",
+     "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM",
+     "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:04:15 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# The 'reshape' package provides the 'rescaler' function.
+
+library(reshape, quietly=TRUE)
+
+# Rescale WAGE_RATE_OF_PAY_FROM.
+
+crs$dataset[["RRK_WAGE_RATE_OF_PAY_FROM"]] <- crs$dataset[["WAGE_RATE_OF_PAY_FROM"]]
+
+# Convert values to ranks.
+
+if (building)
+{
+  crs$dataset[["RRK_WAGE_RATE_OF_PAY_FROM"]] <-  rescaler(crs$dataset[["WAGE_RATE_OF_PAY_FROM"]], "rank")
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:04:18 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME",
+     "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE", "PW_SOURCE_YEAR",
+     "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT",
+     "WILLFUL_VIOLATOR", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE",
+     "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM",
+     "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_DAY",
+     "DECISION_MONTH", "DECISION_YEAR", "TOTAL_WORKERS", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:05:04 x86_64-apple-darwin15.6.0 
+
+# Display box plots for the selected variables. 
+
+# Use ggplot2 to generate box plot for WAGE_RATE_OF_PAY_FROM
+
+# Generate a box plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=WAGE_RATE_OF_PAY_FROM)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=CASE_STATUS, fill=CASE_STATUS), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=CASE_STATUS), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("CASE_STATUS\n\nRattle 2018-Feb-22 15:05:04 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of WAGE_RATE_OF_PAY_FROM (sample)\nby CASE_STATUS") +
+  ggplot2::theme(legend.position="none")
+
+# Use ggplot2 to generate box plot for RRK_WAGE_RATE_OF_PAY_FROM
+
+# Generate a box plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=RRK_WAGE_RATE_OF_PAY_FROM)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=CASE_STATUS, fill=CASE_STATUS), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=CASE_STATUS), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("CASE_STATUS\n\nRattle 2018-Feb-22 15:05:04 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RRK_WAGE_RATE_OF_PAY_FROM (sample)\nby CASE_STATUS") +
+  ggplot2::theme(legend.position="none")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:05:11 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for WAGE_RATE_OF_PAY_FROM
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  dplyr::select(WAGE_RATE_OF_PAY_FROM, CASE_STATUS) %>%
+  ggplot2::ggplot(ggplot2::aes(x=WAGE_RATE_OF_PAY_FROM)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=CASE_STATUS, colour=CASE_STATUS), alpha=0.55) +
+  ggplot2::xlab("WAGE_RATE_OF_PAY_FROM\n\nRattle 2018-Feb-22 15:05:11 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of WAGE_RATE_OF_PAY_FROM (sample)\nby CASE_STATUS") +
+  ggplot2::labs(fill="CASE_STATUS", y="Density")
+
+# Use ggplot2 to generate histogram plot for RRK_WAGE_RATE_OF_PAY_FROM
+
+# Generate the plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  dplyr::select(RRK_WAGE_RATE_OF_PAY_FROM, CASE_STATUS) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RRK_WAGE_RATE_OF_PAY_FROM)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=CASE_STATUS, colour=CASE_STATUS), alpha=0.55) +
+  ggplot2::xlab("RRK_WAGE_RATE_OF_PAY_FROM\n\nRattle 2018-Feb-22 15:05:15 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RRK_WAGE_RATE_OF_PAY_FROM (sample)\nby CASE_STATUS") +
+  ggplot2::labs(fill="CASE_STATUS", y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:06:31 x86_64-apple-darwin15.6.0 
+
+# Display box plots for the selected variables. 
+
+# Use ggplot2 to generate box plot for PREVAILING_WAGE
+
+# Generate a box plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=PREVAILING_WAGE)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=CASE_STATUS, fill=CASE_STATUS), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=CASE_STATUS), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("CASE_STATUS\n\nRattle 2018-Feb-22 15:06:31 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of PREVAILING_WAGE (sample)\nby CASE_STATUS") +
+  ggplot2::theme(legend.position="none")
+
+# Use ggplot2 to generate box plot for RRC_PREVAILING_WAGE
+
+# Generate a box plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=RRC_PREVAILING_WAGE)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=CASE_STATUS, fill=CASE_STATUS), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=CASE_STATUS), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("CASE_STATUS\n\nRattle 2018-Feb-22 15:06:31 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RRC_PREVAILING_WAGE (sample)\nby CASE_STATUS") +
+  ggplot2::theme(legend.position="none")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:06:40 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for PREVAILING_WAGE
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  dplyr::select(PREVAILING_WAGE, CASE_STATUS) %>%
+  ggplot2::ggplot(ggplot2::aes(x=PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=CASE_STATUS, colour=CASE_STATUS), alpha=0.55) +
+  ggplot2::xlab("PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:06:40 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of PREVAILING_WAGE (sample)\nby CASE_STATUS") +
+  ggplot2::labs(fill="CASE_STATUS", y="Density")
+
+# Use ggplot2 to generate histogram plot for RRC_PREVAILING_WAGE
+
+# Generate the plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  dplyr::select(RRC_PREVAILING_WAGE, CASE_STATUS) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RRC_PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=CASE_STATUS, colour=CASE_STATUS), alpha=0.55) +
+  ggplot2::xlab("RRC_PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:06:48 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RRC_PREVAILING_WAGE (sample)\nby CASE_STATUS") +
+  ggplot2::labs(fill="CASE_STATUS", y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:07:16 x86_64-apple-darwin15.6.0 
+
+# Save the project data (variable crs) to file.
+
+save(crs, file="/Users/rohitravishankar/Desktop/Big Data/Assignment 3/h1b-disclosure-dataset/1. Master H1B Dataset.rattle", compress=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:08:35 x86_64-apple-darwin15.6.0 
+
+# Remap variables. 
+
+# Bin the variable(s) into 4 bins using quantiles.
+
+if (building)
+{
+   crs$dataset[["BQ4_DECISION_DAY"]] <- binning(crs$dataset[["DECISION_DAY"]], 4, method="quantile", ordered=FALSE)
+}
+
+
+# When scoring, use the training data parameters to bin new data.
+
+if (scoring)
+{
+  crs$dataset[["BQ4_DECISION_DAY"]] <- cut(crs$dataset[["DECISION_DAY"]],
+    c(1,9,17,23,31),
+    include.lowest=TRUE)
+
+# Alternatively, use the min/max from the new data.
+
+#  crs$dataset[["BQ4_DECISION_DAY"]] <- cut(crs$dataset[["DECISION_DAY"]],
+#    c(min(crs$dataset[["DECISION_DAY"]], na.rm=TRUE),9,17,23, max(crs$dataset[["DECISION_DAY"]], na.rm=TRUE)),
+#    include.lowest=TRUE)
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:08:38 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_MONTH",
+     "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE",
+     "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS", "FULL_TIME_POSITION",
+     "PW_UNIT_OF_PAY", "PW_SOURCE", "PW_SOURCE_YEAR", "PW_SOURCE_OTHER",
+     "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM",
+     "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM",
+     "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE", "BQ4_DECISION_DAY")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_MONTH",
+     "DECISION_YEAR", "TOTAL_WORKERS", "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_TO",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM",
+     "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "BQ4_DECISION_DAY")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("DECISION_DAY", "PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:08:49 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:08:49 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$BQ4_DECISION_DAY)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIED",]$BQ4_DECISION_DAY)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIEDWITHDRAWN",]$BQ4_DECISION_DAY)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="DENIED",]$BQ4_DECISION_DAY)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="WITHDRAWN",]$BQ4_DECISION_DAY)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="BQ4_DECISION_DAY", ylim=c(0, 126745), col=colorspace::rainbow_hcl(5))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+4225, ds[,ord])
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","CERTIFIED","CERTIFIEDWITHDRAWN","DENIED","WITHDRAWN"),  fill=colorspace::rainbow_hcl(5))
+
+# Add a title to the plot.
+
+title(main="Distribution of BQ4_DECISION_DAY (sample)\nby CASE_STATUS",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:09:45 x86_64-apple-darwin15.6.0 
+
+# Save the project data (variable crs) to file.
+
+save(crs, file="/Users/rohitravishankar/Desktop/Big Data/Assignment 3/h1b-disclosure-dataset/1. Master H1B Dataset.rattle", compress=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:10:21 x86_64-apple-darwin15.6.0 
+
+# Remap variables. 
+
+# Turn two factors into one factor.
+
+  crs$dataset[, "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR"] <- interaction(paste(crs$dataset[["H.1B_DEPENDENT"]], "_",crs$dataset[["WILLFUL_VIOLATOR"]], sep=""))
+  crs$dataset[["TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR"]][grepl("^NA_|_NA$", crs$dataset[["TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR"]])] <- NA
+  crs$dataset[["TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR"]] <- as.factor(as.character(crs$dataset[["TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR"]]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:10:24 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_MONTH",
+     "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE",
+     "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS", "FULL_TIME_POSITION",
+     "PW_UNIT_OF_PAY", "PW_SOURCE", "PW_SOURCE_YEAR", "PW_SOURCE_OTHER",
+     "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM",
+     "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_MONTH",
+     "DECISION_YEAR", "TOTAL_WORKERS", "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_TO",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM",
+     "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("DECISION_DAY", "PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:15:30 x86_64-apple-darwin15.6.0 
+
+# Mosaic Plot 
+
+# Generate the table data for plotting.
+
+ds <- table(crs$dataset[crs$sample,]$TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR, crs$dataset[crs$sample,]$CASE_STATUS)
+
+# Sort the entries.
+
+ord <- order(apply(ds, 1, sum), decreasing=TRUE)
+
+# Plot the data.
+
+mosaicplot(ds[ord,], main="Mosaic of TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR (sample)
+by CASE_STATUS", sub="Rattle 2018-Feb-22 15:15:30 rohitravishankar", color=colorspace::rainbow_hcl(5)[-1], cex=0.7, xlab="TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", ylab="CASE_STATUS")
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:15:54 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:15:54 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$H.1B_DEPENDENT)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIED",]$H.1B_DEPENDENT)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIEDWITHDRAWN",]$H.1B_DEPENDENT)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="DENIED",]$H.1B_DEPENDENT)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="WITHDRAWN",]$H.1B_DEPENDENT)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="H.1B_DEPENDENT", ylim=c(0, 271016), col=colorspace::rainbow_hcl(5))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+9034, ds[,ord])
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","CERTIFIED","CERTIFIEDWITHDRAWN","DENIED","WITHDRAWN"),  fill=colorspace::rainbow_hcl(5))
+
+# Add a title to the plot.
+
+title(main="Distribution of H.1B_DEPENDENT (sample)\nby CASE_STATUS",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:15:56 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$WILLFUL_VIOLATOR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIED",]$WILLFUL_VIOLATOR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIEDWITHDRAWN",]$WILLFUL_VIOLATOR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="DENIED",]$WILLFUL_VIOLATOR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="WITHDRAWN",]$WILLFUL_VIOLATOR)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="WILLFUL_VIOLATOR", ylim=c(0, 434632), col=colorspace::rainbow_hcl(5))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+14488, ds[,ord])
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","CERTIFIED","CERTIFIEDWITHDRAWN","DENIED","WITHDRAWN"),  fill=colorspace::rainbow_hcl(5))
+
+# Add a title to the plot.
+
+title(main="Distribution of WILLFUL_VIOLATOR (sample)\nby CASE_STATUS",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:15:59 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIED",]$TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIEDWITHDRAWN",]$TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="DENIED",]$TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="WITHDRAWN",]$TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", ylim=c(0, 270985), col=colorspace::rainbow_hcl(5))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+9033, ds[,ord])
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","CERTIFIED","CERTIFIEDWITHDRAWN","DENIED","WITHDRAWN"),  fill=colorspace::rainbow_hcl(5))
+
+# Add a title to the plot.
+
+title(main="Distribution of TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR (sample)\nby CASE_STATUS",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:16:35 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:16:35 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$H.1B_DEPENDENT)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="H.1B_DEPENDENT", ylim=c(0, 271016), col=colorspace::rainbow_hcl(1))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+9034, ds[,ord])
+
+# Add a title to the plot.
+
+title(main="Distribution of H.1B_DEPENDENT (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:16:35 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$WILLFUL_VIOLATOR)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="WILLFUL_VIOLATOR", ylim=c(0, 434632), col=colorspace::rainbow_hcl(1))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+14488, ds[,ord])
+
+# Add a title to the plot.
+
+title(main="Distribution of WILLFUL_VIOLATOR (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:16:36 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", ylim=c(0, 270985), col=colorspace::rainbow_hcl(1))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+9033, ds[,ord])
+
+# Add a title to the plot.
+
+title(main="Distribution of TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:18:22 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# The 'reshape' package provides the 'rescaler' function.
+
+library(reshape, quietly=TRUE)
+
+# Rescale PREVAILING_WAGE.
+
+crs$dataset[["RMD_PREVAILING_WAGE"]] <- crs$dataset[["PREVAILING_WAGE"]]
+
+# Rescale by subtracting median and dividing by median abs deviation.
+
+if (building)
+{
+  crs$dataset[["RMD_PREVAILING_WAGE"]] <-  rescaler(crs$dataset[["PREVAILING_WAGE"]], "robust")
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["RMD_PREVAILING_WAGE"]] <- (crs$dataset[["PREVAILING_WAGE"]] - 68827.000000)/21582.208200
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:18:25 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_MONTH",
+     "DECISION_YEAR", "VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE",
+     "EMPLOYER_COUNTRY", "SOC_NAME", "TOTAL_WORKERS", "FULL_TIME_POSITION",
+     "PW_UNIT_OF_PAY", "PW_SOURCE", "PW_SOURCE_YEAR", "PW_SOURCE_OTHER",
+     "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM",
+     "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "RMD_PREVAILING_WAGE")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_MONTH",
+     "DECISION_YEAR", "TOTAL_WORKERS", "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_TO",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM",
+     "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE",
+     "RMD_PREVAILING_WAGE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("DECISION_DAY", "PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:18:38 x86_64-apple-darwin15.6.0 
+
+# Generate just the data for an Ecdf plot of the variable 'PREVAILING_WAGE'.
+
+ds <- rbind(data.frame(dat=crs$dataset[crs$sample,][,"PREVAILING_WAGE"], grp="All"))
+
+# The 'Hmisc' package provides the 'Ecdf' function.
+
+library(Hmisc, quietly=TRUE)
+
+# Plot the data.
+
+Ecdf(ds[ds$grp=="All",1], col="#E495A5", xlab="PREVAILING_WAGE", lwd=2, ylab=expression(Proportion <= x), subtitles=FALSE)
+
+
+# Add a title to the plot.
+
+title(main="Distribution of PREVAILING_WAGE (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:18:41 x86_64-apple-darwin15.6.0 
+
+# Generate just the data for an Ecdf plot of the variable 'RMD_PREVAILING_WAGE'.
+
+ds <- rbind(data.frame(dat=crs$dataset[crs$sample,][,"RMD_PREVAILING_WAGE"], grp="All"))
+
+# The 'Hmisc' package provides the 'Ecdf' function.
+
+library(Hmisc, quietly=TRUE)
+
+# Plot the data.
+
+Ecdf(ds[ds$grp=="All",1], col="#E495A5", xlab="RMD_PREVAILING_WAGE", lwd=2, ylab=expression(Proportion <= x), subtitles=FALSE)
+
+
+# Add a title to the plot.
+
+title(main="Distribution of RMD_PREVAILING_WAGE (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:19:02 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for PREVAILING_WAGE
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::select(PREVAILING_WAGE) %>%
+  ggplot2::ggplot(ggplot2::aes(x=PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::xlab("PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:19:02 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of PREVAILING_WAGE (sample)") +
+  ggplot2::labs(y="Density")
+
+# Use ggplot2 to generate histogram plot for RMD_PREVAILING_WAGE
+
+# Generate the plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::select(RMD_PREVAILING_WAGE) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RMD_PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::xlab("RMD_PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:19:03 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RMD_PREVAILING_WAGE (sample)") +
+  ggplot2::labs(y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:19:04 x86_64-apple-darwin15.6.0 
+
+# Generate just the data for an Ecdf plot of the variable 'PREVAILING_WAGE'.
+
+ds <- rbind(data.frame(dat=crs$dataset[crs$sample,][,"PREVAILING_WAGE"], grp="All"))
+
+# The 'Hmisc' package provides the 'Ecdf' function.
+
+library(Hmisc, quietly=TRUE)
+
+# Plot the data.
+
+Ecdf(ds[ds$grp=="All",1], col="#E495A5", xlab="PREVAILING_WAGE", lwd=2, ylab=expression(Proportion <= x), subtitles=FALSE)
+
+
+# Add a title to the plot.
+
+title(main="Distribution of PREVAILING_WAGE (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:19:06 x86_64-apple-darwin15.6.0 
+
+# Generate just the data for an Ecdf plot of the variable 'RMD_PREVAILING_WAGE'.
+
+ds <- rbind(data.frame(dat=crs$dataset[crs$sample,][,"RMD_PREVAILING_WAGE"], grp="All"))
+
+# The 'Hmisc' package provides the 'Ecdf' function.
+
+library(Hmisc, quietly=TRUE)
+
+# Plot the data.
+
+Ecdf(ds[ds$grp=="All",1], col="#E495A5", xlab="RMD_PREVAILING_WAGE", lwd=2, ylab=expression(Proportion <= x), subtitles=FALSE)
+
+
+# Add a title to the plot.
+
+title(main="Distribution of RMD_PREVAILING_WAGE (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:19:14 x86_64-apple-darwin15.6.0 
+
+# Save the project data (variable crs) to file.
+
+save(crs, file="/Users/rohitravishankar/Desktop/Big Data/Assignment 3/h1b-disclosure-dataset/1. Master H1B Dataset.rattle", compress=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:19:21 x86_64-apple-darwin15.6.0 
+
+# Save the project data (variable crs) to file.
+
+save(crs, file="/Users/rohitravishankar/Desktop/Big Data/Assignment 3/h1b-disclosure-dataset/1. Master H1B Dataset.rattle", compress=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:19:47 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for PREVAILING_WAGE
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::select(PREVAILING_WAGE) %>%
+  ggplot2::ggplot(ggplot2::aes(x=PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::xlab("PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:19:47 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of PREVAILING_WAGE (sample)") +
+  ggplot2::labs(y="Density")
+
+# Use ggplot2 to generate histogram plot for RMD_PREVAILING_WAGE
+
+# Generate the plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::select(RMD_PREVAILING_WAGE) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RMD_PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::xlab("RMD_PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:19:47 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RMD_PREVAILING_WAGE (sample)") +
+  ggplot2::labs(y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:21:58 x86_64-apple-darwin15.6.0 
+
+# Display box plots for the selected variables. 
+
+# Use ggplot2 to generate box plot for IZR_NAICS_CODE
+
+# Generate a box plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  ggplot2::ggplot(ggplot2::aes(y=IZR_NAICS_CODE)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("Rattle 2018-Feb-22 15:21:58 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of IZR_NAICS_CODE (sample)") +
+  ggplot2::theme(legend.position="none")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:22:01 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for PREVAILING_WAGE
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::select(PREVAILING_WAGE) %>%
+  ggplot2::ggplot(ggplot2::aes(x=PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::xlab("PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:22:01 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of PREVAILING_WAGE (sample)") +
+  ggplot2::labs(y="Density")
+
+# Use ggplot2 to generate histogram plot for RMD_PREVAILING_WAGE
+
+# Generate the plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::select(RMD_PREVAILING_WAGE) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RMD_PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::xlab("RMD_PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:22:05 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RMD_PREVAILING_WAGE (sample)") +
+  ggplot2::labs(y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:22:13 x86_64-apple-darwin15.6.0 
+
+# Display box plots for the selected variables. 
+
+# Use ggplot2 to generate box plot for IZR_NAICS_CODE
+
+# Generate a box plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  ggplot2::ggplot(ggplot2::aes(y=IZR_NAICS_CODE)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("Rattle 2018-Feb-22 15:22:13 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of IZR_NAICS_CODE (sample)") +
+  ggplot2::theme(legend.position="none")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:22:17 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for PREVAILING_WAGE
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::select(PREVAILING_WAGE) %>%
+  ggplot2::ggplot(ggplot2::aes(x=PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::xlab("PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:22:17 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of PREVAILING_WAGE (sample)") +
+  ggplot2::labs(y="Density")
+
+# Use ggplot2 to generate histogram plot for RMD_PREVAILING_WAGE
+
+# Generate the plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::select(RMD_PREVAILING_WAGE) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RMD_PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::xlab("RMD_PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:22:21 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RMD_PREVAILING_WAGE (sample)") +
+  ggplot2::labs(y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:22:40 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for PREVAILING_WAGE
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::select(PREVAILING_WAGE) %>%
+  ggplot2::ggplot(ggplot2::aes(x=PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::xlab("PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:22:40 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of PREVAILING_WAGE (sample)") +
+  ggplot2::labs(y="Density")
+
+# Use ggplot2 to generate histogram plot for RMD_PREVAILING_WAGE
+
+# Generate the plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::select(RMD_PREVAILING_WAGE) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RMD_PREVAILING_WAGE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::xlab("RMD_PREVAILING_WAGE\n\nRattle 2018-Feb-22 15:22:41 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RMD_PREVAILING_WAGE (sample)") +
+  ggplot2::labs(y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:22:42 x86_64-apple-darwin15.6.0 
+
+# Benford's Law 
+
+# The 'ggplot2' package provides the 'ggplot' function.
+
+library(ggplot2, quietly=TRUE)
+
+# The 'reshape' package provides the 'melt' function.
+
+library(reshape, quietly=TRUE)
+
+# Initialies the parameters.
+
+var    <- "IZR_NAICS_CODE"
+digit  <- 1
+len    <- 1
+
+# Build the dataset
+
+ds <- merge(benfordDistr(digit, len),
+            digitDistr(crs$dataset[crs$sample,][var], digit, len, "All"))
+
+# Plot the digital distribution
+
+p <- plotDigitFreq(ds)
+p <- p + ggtitle("Digital Analysis of First Digit 
+of IZR_NAICS_CODE ")
+print(p)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:39:55 x86_64-apple-darwin15.6.0 
+
+# Remap variables. 
+
+# Bin the variable(s) into 4 bins using quantiles.
+
+if (building)
+{
+   crs$dataset[["BQ4_DECISION_MONTH"]] <- binning(crs$dataset[["DECISION_MONTH"]], 4, method="quantile", ordered=FALSE)
+}
+
+
+# When scoring, use the training data parameters to bin new data.
+
+if (scoring)
+{
+  crs$dataset[["BQ4_DECISION_MONTH"]] <- cut(crs$dataset[["DECISION_MONTH"]],
+    c(1,3,5,12),
+    include.lowest=TRUE)
+
+# Alternatively, use the min/max from the new data.
+
+#  crs$dataset[["BQ4_DECISION_MONTH"]] <- cut(crs$dataset[["DECISION_MONTH"]],
+#    c(min(crs$dataset[["DECISION_MONTH"]], na.rm=TRUE),3,5, max(crs$dataset[["DECISION_MONTH"]], na.rm=TRUE)),
+#    include.lowest=TRUE)
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:39:58 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_YEAR",
+     "VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "TOTAL_WORKERS", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY",
+     "PW_SOURCE", "PW_SOURCE_YEAR", "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO",
+     "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE",
+     "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM",
+     "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE", "BQ4_DECISION_DAY",
+     "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "RMD_PREVAILING_WAGE", "BQ4_DECISION_MONTH")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "CASE_SUBMITTED_YEAR", "DECISION_YEAR",
+     "TOTAL_WORKERS", "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE",
+     "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM",
+     "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE", "RMD_PREVAILING_WAGE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "BQ4_DECISION_MONTH")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("DECISION_DAY", "DECISION_MONTH", "PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:40:10 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:40:10 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$BQ4_DECISION_MONTH)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="BQ4_DECISION_MONTH", ylim=c(0, 270208), col=colorspace::rainbow_hcl(1))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+9007, ds[,ord])
+
+# Add a title to the plot.
+
+title(main="Distribution of BQ4_DECISION_MONTH (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:46:50 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 15:46:50 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$BQ4_DECISION_MONTH)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIED",]$BQ4_DECISION_MONTH)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIEDWITHDRAWN",]$BQ4_DECISION_MONTH)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="DENIED",]$BQ4_DECISION_MONTH)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="WITHDRAWN",]$BQ4_DECISION_MONTH)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="BQ4_DECISION_MONTH", ylim=c(0, 270208), col=colorspace::rainbow_hcl(5))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+9007, ds[,ord])
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","CERTIFIED","CERTIFIEDWITHDRAWN","DENIED","WITHDRAWN"),  fill=colorspace::rainbow_hcl(5))
+
+# Add a title to the plot.
+
+title(main="Distribution of BQ4_DECISION_MONTH (sample)\nby CASE_STATUS",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 16:48:05 x86_64-apple-darwin15.6.0 
+
+# Save the project data (variable crs) to file.
+
+save(crs, file="/Users/rohitravishankar/Desktop/Big Data/Assignment 3/h1b-disclosure-dataset/1. Master H1B Dataset.rattle", compress=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 17:27:46 x86_64-apple-darwin15.6.0 
+
+# Save the project data (variable crs) to file.
+
+save(crs, file="/Users/rohitravishankar/Desktop/Big Data/Assignment 3/h1b-disclosure-dataset/1. Master H1B Dataset.rattle", compress=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 19:26:39 x86_64-apple-darwin15.6.0 
+
+# Display box plots for the selected variables. 
+
+# Use ggplot2 to generate box plot for TOTAL_WORKERS
+
+# Generate a box plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=TOTAL_WORKERS)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=CASE_STATUS, fill=CASE_STATUS), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=CASE_STATUS), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("CASE_STATUS\n\nRattle 2018-Feb-22 19:26:39 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of TOTAL_WORKERS (sample)\nby CASE_STATUS") +
+  ggplot2::theme(legend.position="none")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 19:26:44 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 19:26:44 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$BQ4_DECISION_MONTH)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIED",]$BQ4_DECISION_MONTH)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIEDWITHDRAWN",]$BQ4_DECISION_MONTH)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="DENIED",]$BQ4_DECISION_MONTH)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="WITHDRAWN",]$BQ4_DECISION_MONTH)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="BQ4_DECISION_MONTH", ylim=c(0, 270208), col=colorspace::rainbow_hcl(5))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+9007, ds[,ord])
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","CERTIFIED","CERTIFIEDWITHDRAWN","DENIED","WITHDRAWN"),  fill=colorspace::rainbow_hcl(5))
+
+# Add a title to the plot.
+
+title(main="Distribution of BQ4_DECISION_MONTH (sample)\nby CASE_STATUS",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:10:29 x86_64-apple-darwin15.6.0 
+
+# Remap variables. 
+
+# Bin the variable(s) into 4 bins using quantiles.
+
+if (building)
+{
+   crs$dataset[["BQ4_CASE_SUBMITTED_YEAR"]] <- binning(crs$dataset[["CASE_SUBMITTED_YEAR"]], 4, method="quantile", ordered=FALSE)
+}
+
+
+# When scoring, use the training data parameters to bin new data.
+
+if (scoring)
+{
+  crs$dataset[["BQ4_CASE_SUBMITTED_YEAR"]] <- cut(crs$dataset[["CASE_SUBMITTED_YEAR"]],
+    c(2010,2020),
+    include.lowest=TRUE)
+
+# Alternatively, use the min/max from the new data.
+
+#  crs$dataset[["BQ4_CASE_SUBMITTED_YEAR"]] <- cut(crs$dataset[["CASE_SUBMITTED_YEAR"]],
+#    c(min(crs$dataset[["CASE_SUBMITTED_YEAR"]], na.rm=TRUE), max(crs$dataset[["CASE_SUBMITTED_YEAR"]], na.rm=TRUE)),
+#    include.lowest=TRUE)
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:10:32 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "VISA_CLASS",
+     "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME",
+     "TOTAL_WORKERS", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_YEAR", "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM",
+     "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM",
+     "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE", "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR",
+     "RMD_PREVAILING_WAGE", "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "TOTAL_WORKERS",
+     "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM",
+     "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM",
+     "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE", "RMD_PREVAILING_WAGE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("CASE_SUBMITTED_YEAR", "DECISION_DAY", "DECISION_MONTH", "PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:10:41 x86_64-apple-darwin15.6.0 
+
+# Dot Plot 
+
+# Generate the summary data for the plot.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIED",]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIEDWITHDRAWN",]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="DENIED",]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="WITHDRAWN",]$BQ4_CASE_SUBMITTED_YEAR)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+dotchart(ds[nrow(ds):1,ord], main="Distribution of BQ4_CASE_SUBMITTED_YEAR (sample)\nby CASE_STATUS", sub="Rattle 2018-Feb-22 20:10:44 rohitravishankar", col=rev(colorspace::rainbow_hcl(5)), labels="", xlab="Frequency", ylab="BQ4_CASE_SUBMITTED_YEAR", pch=c(1:4, 19))
+
+# Add a legend.
+
+legend("bottomright", bty="n", c("All","CERTIFIED","CERTIFIEDWITHDRAWN","DENIED","WITHDRAWN"), col=colorspace::rainbow_hcl(5), pch=c(19, 4:1))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:10:48 x86_64-apple-darwin15.6.0 
+
+# Dot Plot 
+
+# Generate the summary data for the plot.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIED",]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIEDWITHDRAWN",]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="DENIED",]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="WITHDRAWN",]$BQ4_CASE_SUBMITTED_YEAR)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+dotchart(ds[nrow(ds):1,ord], main="Distribution of BQ4_CASE_SUBMITTED_YEAR (sample)\nby CASE_STATUS", sub="Rattle 2018-Feb-22 20:10:51 rohitravishankar", col=rev(colorspace::rainbow_hcl(5)), labels="", xlab="Frequency", ylab="BQ4_CASE_SUBMITTED_YEAR", pch=c(1:4, 19))
+
+# Add a legend.
+
+legend("bottomright", bty="n", c("All","CERTIFIED","CERTIFIEDWITHDRAWN","DENIED","WITHDRAWN"), col=colorspace::rainbow_hcl(5), pch=c(19, 4:1))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:11:08 x86_64-apple-darwin15.6.0 
+
+# Dot Plot 
+
+# Generate the summary data for the plot.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$BQ4_CASE_SUBMITTED_YEAR)))
+
+# Sort the entries.
+
+ord <- order(ds[1,])
+
+# Plot the data.
+
+dotchart(ds[nrow(ds):1,ord], main="Distribution of BQ4_CASE_SUBMITTED_YEAR (sample)", sub="Rattle 2018-Feb-22 20:11:09 rohitravishankar", col=rev(colorspace::rainbow_hcl(1)), xlab="Frequency", ylab="BQ4_CASE_SUBMITTED_YEAR", pch=c(1:0, 19))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:11:17 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:11:17 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$BQ4_CASE_SUBMITTED_YEAR)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="BQ4_CASE_SUBMITTED_YEAR", ylim=c(0, 443632), col=colorspace::rainbow_hcl(1))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+14788, ds[,ord])
+
+# Add a title to the plot.
+
+title(main="Distribution of BQ4_CASE_SUBMITTED_YEAR (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:11:36 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:11:36 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$H.1B_DEPENDENT=="N",]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$H.1B_DEPENDENT=="Y",]$BQ4_CASE_SUBMITTED_YEAR)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="BQ4_CASE_SUBMITTED_YEAR", ylim=c(0, 443632), col=colorspace::rainbow_hcl(3))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+14788, ds[,ord])
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","N","Y"),  fill=colorspace::rainbow_hcl(3))
+
+# Add a title to the plot.
+
+title(main="Distribution of BQ4_CASE_SUBMITTED_YEAR (sample)\nby H.1B_DEPENDENT",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:12:20 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:12:20 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$VISA_CLASS)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$H.1B_DEPENDENT=="N",]$VISA_CLASS)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$H.1B_DEPENDENT=="Y",]$VISA_CLASS)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="VISA_CLASS", ylim=c(0, 434605), col=colorspace::rainbow_hcl(3))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+14487, ds[,ord])
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","N","Y"),  fill=colorspace::rainbow_hcl(3))
+
+# Add a title to the plot.
+
+title(main="Distribution of VISA_CLASS (sample)\nby H.1B_DEPENDENT",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:12:43 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:12:43 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$EMPLOYER_NAME)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$H.1B_DEPENDENT=="N",]$EMPLOYER_NAME)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$H.1B_DEPENDENT=="Y",]$EMPLOYER_NAME)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="EMPLOYER_NAME", ylim=c(0, 316945), col=colorspace::rainbow_hcl(3))
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","N","Y"),  fill=colorspace::rainbow_hcl(3))
+
+# Add a title to the plot.
+
+title(main="Distribution of EMPLOYER_NAME (sample)\nby H.1B_DEPENDENT",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:13:00 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:13:00 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$EMPLOYER_STATE)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$H.1B_DEPENDENT=="N",]$EMPLOYER_STATE)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$H.1B_DEPENDENT=="Y",]$EMPLOYER_STATE)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="EMPLOYER_STATE", ylim=c(0, 76330), col=colorspace::rainbow_hcl(3))
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","N","Y"),  fill=colorspace::rainbow_hcl(3))
+
+# Add a title to the plot.
+
+title(main="Distribution of EMPLOYER_STATE (sample)\nby H.1B_DEPENDENT",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:14:35 x86_64-apple-darwin15.6.0 
+
+# Remap variables. 
+
+# Bin the variable(s) into 4 bins using quantiles.
+
+if (building)
+{
+   crs$dataset[["BQ4_CASE_SUBMITTED_YEAR"]] <- binning(crs$dataset[["CASE_SUBMITTED_YEAR"]], 4, method="quantile", ordered=FALSE)
+}
+
+
+# When scoring, use the training data parameters to bin new data.
+
+if (scoring)
+{
+  crs$dataset[["BQ4_CASE_SUBMITTED_YEAR"]] <- cut(crs$dataset[["CASE_SUBMITTED_YEAR"]],
+    c(2010,2020),
+    include.lowest=TRUE)
+
+# Alternatively, use the min/max from the new data.
+
+#  crs$dataset[["BQ4_CASE_SUBMITTED_YEAR"]] <- cut(crs$dataset[["CASE_SUBMITTED_YEAR"]],
+#    c(min(crs$dataset[["CASE_SUBMITTED_YEAR"]], na.rm=TRUE), max(crs$dataset[["CASE_SUBMITTED_YEAR"]], na.rm=TRUE)),
+#    include.lowest=TRUE)
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:14:38 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "VISA_CLASS",
+     "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME",
+     "TOTAL_WORKERS", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_YEAR", "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY",
+     "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM",
+     "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM",
+     "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE", "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR",
+     "RMD_PREVAILING_WAGE", "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "TOTAL_WORKERS",
+     "PW_SOURCE_YEAR", "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM",
+     "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM",
+     "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE", "RMD_PREVAILING_WAGE")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("CASE_SUBMITTED_YEAR", "DECISION_DAY", "DECISION_MONTH", "PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:14:52 x86_64-apple-darwin15.6.0 
+
+# Dot Plot 
+
+# Generate the summary data for the plot.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$H.1B_DEPENDENT=="N",]$BQ4_CASE_SUBMITTED_YEAR)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$H.1B_DEPENDENT=="Y",]$BQ4_CASE_SUBMITTED_YEAR)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+dotchart(ds[nrow(ds):1,ord], main="Distribution of BQ4_CASE_SUBMITTED_YEAR (sample)\nby H.1B_DEPENDENT", sub="Rattle 2018-Feb-22 20:14:53 rohitravishankar", col=rev(colorspace::rainbow_hcl(3)), labels="", xlab="Frequency", ylab="BQ4_CASE_SUBMITTED_YEAR", pch=c(1:2, 19))
+
+# Add a legend.
+
+legend("bottomright", bty="n", c("All","N","Y"), col=colorspace::rainbow_hcl(3), pch=c(19, 2:1))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:15:21 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# The 'reshape' package provides the 'rescaler' function.
+
+library(reshape, quietly=TRUE)
+
+# Rescale TOTAL_WORKERS.
+
+crs$dataset[["RMD_TOTAL_WORKERS"]] <- crs$dataset[["TOTAL_WORKERS"]]
+
+# Rescale by subtracting median and dividing by median abs deviation.
+
+if (building)
+{
+  crs$dataset[["RMD_TOTAL_WORKERS"]] <-  rescaler(crs$dataset[["TOTAL_WORKERS"]], "robust")
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["RMD_TOTAL_WORKERS"]] <- (crs$dataset[["TOTAL_WORKERS"]] - 1.000000)/0.000000
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:15:24 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "VISA_CLASS",
+     "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE", "PW_SOURCE_YEAR",
+     "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE",
+     "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE", "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "RMD_PREVAILING_WAGE",
+     "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR", "RMD_TOTAL_WORKERS")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE", "RMD_PREVAILING_WAGE", "RMD_TOTAL_WORKERS")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("CASE_SUBMITTED_YEAR", "DECISION_DAY", "DECISION_MONTH", "TOTAL_WORKERS", "PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:15:41 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for TOTAL_WORKERS
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  dplyr::select(TOTAL_WORKERS, H.1B_DEPENDENT) %>%
+  ggplot2::ggplot(ggplot2::aes(x=TOTAL_WORKERS)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=H.1B_DEPENDENT, colour=H.1B_DEPENDENT), alpha=0.55) +
+  ggplot2::xlab("TOTAL_WORKERS\n\nRattle 2018-Feb-22 20:15:41 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::labs(fill="H.1B_DEPENDENT", y="Density")
+
+# Use ggplot2 to generate histogram plot for RMD_TOTAL_WORKERS
+
+# Generate the plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  dplyr::select(RMD_TOTAL_WORKERS, H.1B_DEPENDENT) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RMD_TOTAL_WORKERS)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=H.1B_DEPENDENT, colour=H.1B_DEPENDENT), alpha=0.55) +
+  ggplot2::xlab("RMD_TOTAL_WORKERS\n\nRattle 2018-Feb-22 20:15:41 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RMD_TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::labs(fill="H.1B_DEPENDENT", y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:16:23 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# The 'reshape' package provides the 'rescaler' function.
+
+library(reshape, quietly=TRUE)
+
+# Rescale TOTAL_WORKERS.
+
+crs$dataset[["R01_TOTAL_WORKERS"]] <- crs$dataset[["TOTAL_WORKERS"]]
+
+# Rescale to [0,1].
+
+if (building)
+{
+  crs$dataset[["R01_TOTAL_WORKERS"]] <-  rescaler(crs$dataset[["TOTAL_WORKERS"]], "range")
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["R01_TOTAL_WORKERS"]] <- (crs$dataset[["TOTAL_WORKERS"]] - 0.000000)/abs(155.000000 - 0.000000)
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:16:27 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "VISA_CLASS",
+     "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE", "PW_SOURCE_YEAR",
+     "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE",
+     "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE", "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "RMD_PREVAILING_WAGE",
+     "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR", "RMD_TOTAL_WORKERS", "R01_TOTAL_WORKERS")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE", "RMD_PREVAILING_WAGE", "RMD_TOTAL_WORKERS", "R01_TOTAL_WORKERS")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("CASE_SUBMITTED_YEAR", "DECISION_DAY", "DECISION_MONTH", "TOTAL_WORKERS", "PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:16:34 x86_64-apple-darwin15.6.0 
+
+# Transform variables by rescaling. 
+
+# Rescale TOTAL_WORKERS.
+
+crs$dataset[["RRC_TOTAL_WORKERS"]] <- crs$dataset[["TOTAL_WORKERS"]]
+
+# Recenter and rescale the data around 0.
+
+if (building)
+{
+  crs$dataset[["RRC_TOTAL_WORKERS"]] <-
+    scale(crs$dataset[["TOTAL_WORKERS"]])[,1]
+}
+
+# When scoring transform using the training data parameters.
+
+if (scoring)
+{
+  crs$dataset[["RRC_TOTAL_WORKERS"]] <- (crs$dataset[["TOTAL_WORKERS"]] - 1.907171)/4.925016
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:16:37 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "VISA_CLASS",
+     "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE", "PW_SOURCE_YEAR",
+     "PW_SOURCE_OTHER", "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE",
+     "WORKSITE_POSTAL_CODE", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE", "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "RMD_PREVAILING_WAGE",
+     "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR", "RMD_TOTAL_WORKERS", "R01_TOTAL_WORKERS",
+     "RRC_TOTAL_WORKERS")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE", "RMD_PREVAILING_WAGE", "RMD_TOTAL_WORKERS", "R01_TOTAL_WORKERS",
+     "RRC_TOTAL_WORKERS")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE",
+     "PW_SOURCE_OTHER", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("CASE_SUBMITTED_YEAR", "DECISION_DAY", "DECISION_MONTH", "TOTAL_WORKERS", "PREVAILING_WAGE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:16:52 x86_64-apple-darwin15.6.0 
+
+# Display box plots for the selected variables. 
+
+# Use ggplot2 to generate box plot for TOTAL_WORKERS
+
+# Generate a box plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=TOTAL_WORKERS)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=H.1B_DEPENDENT, fill=H.1B_DEPENDENT), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=H.1B_DEPENDENT), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("H.1B_DEPENDENT\n\nRattle 2018-Feb-22 20:16:52 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::theme(legend.position="none")
+
+# Use ggplot2 to generate box plot for RMD_TOTAL_WORKERS
+
+# Generate a box plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=RMD_TOTAL_WORKERS)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=H.1B_DEPENDENT, fill=H.1B_DEPENDENT), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=H.1B_DEPENDENT), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("H.1B_DEPENDENT\n\nRattle 2018-Feb-22 20:16:52 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RMD_TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::theme(legend.position="none")
+
+# Use ggplot2 to generate box plot for R01_TOTAL_WORKERS
+
+# Generate a box plot.
+
+p03 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=R01_TOTAL_WORKERS)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=H.1B_DEPENDENT, fill=H.1B_DEPENDENT), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=H.1B_DEPENDENT), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("H.1B_DEPENDENT\n\nRattle 2018-Feb-22 20:16:53 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of R01_TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::theme(legend.position="none")
+
+# Use ggplot2 to generate box plot for RRC_TOTAL_WORKERS
+
+# Generate a box plot.
+
+p04 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=RRC_TOTAL_WORKERS)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=H.1B_DEPENDENT, fill=H.1B_DEPENDENT), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=H.1B_DEPENDENT), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("H.1B_DEPENDENT\n\nRattle 2018-Feb-22 20:16:53 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RRC_TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::theme(legend.position="none")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02, p03, p04)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:17:47 x86_64-apple-darwin15.6.0 
+
+# Display box plots for the selected variables. 
+
+# Use ggplot2 to generate box plot for TOTAL_WORKERS
+
+# Generate a box plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=TOTAL_WORKERS)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=H.1B_DEPENDENT, fill=H.1B_DEPENDENT), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=H.1B_DEPENDENT), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("H.1B_DEPENDENT\n\nRattle 2018-Feb-22 20:17:47 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::theme(legend.position="none")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:17:51 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for RMD_TOTAL_WORKERS
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  dplyr::select(RMD_TOTAL_WORKERS, H.1B_DEPENDENT) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RMD_TOTAL_WORKERS)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=H.1B_DEPENDENT, colour=H.1B_DEPENDENT), alpha=0.55) +
+  ggplot2::xlab("RMD_TOTAL_WORKERS\n\nRattle 2018-Feb-22 20:17:51 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RMD_TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::labs(fill="H.1B_DEPENDENT", y="Density")
+
+# Use ggplot2 to generate histogram plot for R01_TOTAL_WORKERS
+
+# Generate the plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  dplyr::select(R01_TOTAL_WORKERS, H.1B_DEPENDENT) %>%
+  ggplot2::ggplot(ggplot2::aes(x=R01_TOTAL_WORKERS)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=H.1B_DEPENDENT, colour=H.1B_DEPENDENT), alpha=0.55) +
+  ggplot2::xlab("R01_TOTAL_WORKERS\n\nRattle 2018-Feb-22 20:17:54 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of R01_TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::labs(fill="H.1B_DEPENDENT", y="Density")
+
+# Use ggplot2 to generate histogram plot for RRC_TOTAL_WORKERS
+
+# Generate the plot.
+
+p03 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  dplyr::select(RRC_TOTAL_WORKERS, H.1B_DEPENDENT) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RRC_TOTAL_WORKERS)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=H.1B_DEPENDENT, colour=H.1B_DEPENDENT), alpha=0.55) +
+  ggplot2::xlab("RRC_TOTAL_WORKERS\n\nRattle 2018-Feb-22 20:17:54 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RRC_TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::labs(fill="H.1B_DEPENDENT", y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02, p03)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:19:17 x86_64-apple-darwin15.6.0 
+
+# Display box plots for the selected variables. 
+
+# Use ggplot2 to generate box plot for TOTAL_WORKERS
+
+# Generate a box plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=TOTAL_WORKERS)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=H.1B_DEPENDENT, fill=H.1B_DEPENDENT), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=H.1B_DEPENDENT), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("H.1B_DEPENDENT\n\nRattle 2018-Feb-22 20:19:17 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::theme(legend.position="none")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:19:21 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for IZR_NAICS_CODE
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  dplyr::select(IZR_NAICS_CODE, H.1B_DEPENDENT) %>%
+  ggplot2::ggplot(ggplot2::aes(x=IZR_NAICS_CODE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=H.1B_DEPENDENT, colour=H.1B_DEPENDENT), alpha=0.55) +
+  ggplot2::xlab("IZR_NAICS_CODE\n\nRattle 2018-Feb-22 20:19:21 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of IZR_NAICS_CODE (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::labs(fill="H.1B_DEPENDENT", y="Density")
+
+# Use ggplot2 to generate histogram plot for RMD_TOTAL_WORKERS
+
+# Generate the plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  dplyr::select(RMD_TOTAL_WORKERS, H.1B_DEPENDENT) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RMD_TOTAL_WORKERS)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=H.1B_DEPENDENT, colour=H.1B_DEPENDENT), alpha=0.55) +
+  ggplot2::xlab("RMD_TOTAL_WORKERS\n\nRattle 2018-Feb-22 20:19:25 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RMD_TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::labs(fill="H.1B_DEPENDENT", y="Density")
+
+# Use ggplot2 to generate histogram plot for R01_TOTAL_WORKERS
+
+# Generate the plot.
+
+p03 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  dplyr::select(R01_TOTAL_WORKERS, H.1B_DEPENDENT) %>%
+  ggplot2::ggplot(ggplot2::aes(x=R01_TOTAL_WORKERS)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=H.1B_DEPENDENT, colour=H.1B_DEPENDENT), alpha=0.55) +
+  ggplot2::xlab("R01_TOTAL_WORKERS\n\nRattle 2018-Feb-22 20:19:25 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of R01_TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::labs(fill="H.1B_DEPENDENT", y="Density")
+
+# Use ggplot2 to generate histogram plot for RRC_TOTAL_WORKERS
+
+# Generate the plot.
+
+p04 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(H.1B_DEPENDENT=as.factor(H.1B_DEPENDENT)) %>%
+  dplyr::select(RRC_TOTAL_WORKERS, H.1B_DEPENDENT) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RRC_TOTAL_WORKERS)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=H.1B_DEPENDENT, colour=H.1B_DEPENDENT), alpha=0.55) +
+  ggplot2::xlab("RRC_TOTAL_WORKERS\n\nRattle 2018-Feb-22 20:19:26 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RRC_TOTAL_WORKERS (sample)\nby H.1B_DEPENDENT") +
+  ggplot2::labs(fill="H.1B_DEPENDENT", y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02, p03, p04)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:19:37 x86_64-apple-darwin15.6.0 
+
+# Display box plots for the selected variables. 
+
+# Use ggplot2 to generate box plot for TOTAL_WORKERS
+
+# Generate a box plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  ggplot2::ggplot(ggplot2::aes(y=TOTAL_WORKERS)) +
+  ggplot2::geom_boxplot(ggplot2::aes(x="All"), notch=TRUE, fill="grey") +
+  ggplot2::stat_summary(ggplot2::aes(x="All"), fun.y=mean, geom="point", shape=8) +
+  ggplot2::geom_boxplot(ggplot2::aes(x=CASE_STATUS, fill=CASE_STATUS), notch=TRUE) +
+  ggplot2::stat_summary(ggplot2::aes(x=CASE_STATUS), fun.y=mean, geom="point", shape=8) +
+  ggplot2::xlab("CASE_STATUS\n\nRattle 2018-Feb-22 20:19:37 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of TOTAL_WORKERS (sample)\nby CASE_STATUS") +
+  ggplot2::theme(legend.position="none")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:19:41 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for IZR_NAICS_CODE
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  dplyr::select(IZR_NAICS_CODE, CASE_STATUS) %>%
+  ggplot2::ggplot(ggplot2::aes(x=IZR_NAICS_CODE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=CASE_STATUS, colour=CASE_STATUS), alpha=0.55) +
+  ggplot2::xlab("IZR_NAICS_CODE\n\nRattle 2018-Feb-22 20:19:41 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of IZR_NAICS_CODE (sample)\nby CASE_STATUS") +
+  ggplot2::labs(fill="CASE_STATUS", y="Density")
+
+# Use ggplot2 to generate histogram plot for RMD_TOTAL_WORKERS
+
+# Generate the plot.
+
+p02 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  dplyr::select(RMD_TOTAL_WORKERS, CASE_STATUS) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RMD_TOTAL_WORKERS)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=CASE_STATUS, colour=CASE_STATUS), alpha=0.55) +
+  ggplot2::xlab("RMD_TOTAL_WORKERS\n\nRattle 2018-Feb-22 20:19:44 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RMD_TOTAL_WORKERS (sample)\nby CASE_STATUS") +
+  ggplot2::labs(fill="CASE_STATUS", y="Density")
+
+# Use ggplot2 to generate histogram plot for R01_TOTAL_WORKERS
+
+# Generate the plot.
+
+p03 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  dplyr::select(R01_TOTAL_WORKERS, CASE_STATUS) %>%
+  ggplot2::ggplot(ggplot2::aes(x=R01_TOTAL_WORKERS)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=CASE_STATUS, colour=CASE_STATUS), alpha=0.55) +
+  ggplot2::xlab("R01_TOTAL_WORKERS\n\nRattle 2018-Feb-22 20:19:45 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of R01_TOTAL_WORKERS (sample)\nby CASE_STATUS") +
+  ggplot2::labs(fill="CASE_STATUS", y="Density")
+
+# Use ggplot2 to generate histogram plot for RRC_TOTAL_WORKERS
+
+# Generate the plot.
+
+p04 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  dplyr::select(RRC_TOTAL_WORKERS, CASE_STATUS) %>%
+  ggplot2::ggplot(ggplot2::aes(x=RRC_TOTAL_WORKERS)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=CASE_STATUS, colour=CASE_STATUS), alpha=0.55) +
+  ggplot2::xlab("RRC_TOTAL_WORKERS\n\nRattle 2018-Feb-22 20:19:45 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of RRC_TOTAL_WORKERS (sample)\nby CASE_STATUS") +
+  ggplot2::labs(fill="CASE_STATUS", y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01, p02, p03, p04)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:20:07 x86_64-apple-darwin15.6.0 
+
+# Display histogram plots for the selected variables. 
+
+# Use ggplot2 to generate histogram plot for IZR_NAICS_CODE
+
+# Generate the plot.
+
+p01 <- crs %>%
+  with(dataset[sample,]) %>%
+  dplyr::mutate(CASE_STATUS=as.factor(CASE_STATUS)) %>%
+  dplyr::select(IZR_NAICS_CODE, CASE_STATUS) %>%
+  ggplot2::ggplot(ggplot2::aes(x=IZR_NAICS_CODE)) +
+  ggplot2::geom_density(lty=3) +
+  ggplot2::geom_density(ggplot2::aes(fill=CASE_STATUS, colour=CASE_STATUS), alpha=0.55) +
+  ggplot2::xlab("IZR_NAICS_CODE\n\nRattle 2018-Feb-22 20:20:07 rohitravishankar") +
+  ggplot2::ggtitle("Distribution of IZR_NAICS_CODE (sample)\nby CASE_STATUS") +
+  ggplot2::labs(fill="CASE_STATUS", y="Density")
+
+# Display the plots.
+
+gridExtra::grid.arrange(p01)
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:27:01 x86_64-apple-darwin15.6.0 
+
+# Transform variables by imputing missing values. 
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:27:17 x86_64-apple-darwin15.6.0 
+
+# Perform missing value imputation. 
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:27:17 x86_64-apple-darwin15.6.0 
+
+# Transform variables by imputing missing values. 
+
+# Impute PW_SOURCE.
+
+crs$dataset[["IZR_PW_SOURCE"]] <- crs$dataset[["PW_SOURCE"]]
+
+# Add a new category 'Missing' to the variable
+
+levels(crs$dataset[["IZR_PW_SOURCE"]]) <- c(levels(crs$dataset[["IZR_PW_SOURCE"]]), "Missing")
+
+# Change all NAs to 'Missing'
+
+crs$dataset[["IZR_PW_SOURCE"]][is.na(crs$dataset[["PW_SOURCE"]])] <- "Missing"
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:27:20 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "VISA_CLASS",
+     "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE_YEAR", "PW_SOURCE_OTHER",
+     "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM",
+     "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "RMD_PREVAILING_WAGE", "BQ4_DECISION_MONTH",
+     "BQ4_CASE_SUBMITTED_YEAR", "RMD_TOTAL_WORKERS", "R01_TOTAL_WORKERS", "RRC_TOTAL_WORKERS",
+     "IZR_PW_SOURCE")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE", "RMD_PREVAILING_WAGE", "RMD_TOTAL_WORKERS", "R01_TOTAL_WORKERS",
+     "RRC_TOTAL_WORKERS")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE_OTHER",
+     "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "BQ4_DECISION_DAY",
+     "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR", "IZR_PW_SOURCE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("CASE_SUBMITTED_YEAR", "DECISION_DAY", "DECISION_MONTH", "TOTAL_WORKERS", "PREVAILING_WAGE", "PW_SOURCE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:27:40 x86_64-apple-darwin15.6.0 
+
+# Dot Plot 
+
+# Generate the summary data for the plot.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$PW_SOURCE)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIED",]$PW_SOURCE)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIEDWITHDRAWN",]$PW_SOURCE)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="DENIED",]$PW_SOURCE)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="WITHDRAWN",]$PW_SOURCE)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+dotchart(ds[nrow(ds):1,ord], main="Distribution of PW_SOURCE (sample)\nby CASE_STATUS", sub="Rattle 2018-Feb-22 20:27:43 rohitravishankar", col=rev(colorspace::rainbow_hcl(5)), labels="", xlab="Frequency", ylab="PW_SOURCE", pch=c(1:4, 19))
+
+# Add a legend.
+
+legend("bottomright", bty="n", c("All","CERTIFIED","CERTIFIEDWITHDRAWN","DENIED","WITHDRAWN"), col=colorspace::rainbow_hcl(5), pch=c(19, 4:1))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:27:43 x86_64-apple-darwin15.6.0 
+
+# Dot Plot 
+
+# Generate the summary data for the plot.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$IZR_PW_SOURCE)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIED",]$IZR_PW_SOURCE)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="CERTIFIEDWITHDRAWN",]$IZR_PW_SOURCE)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="DENIED",]$IZR_PW_SOURCE)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$CASE_STATUS=="WITHDRAWN",]$IZR_PW_SOURCE)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+dotchart(ds[nrow(ds):1,ord], main="Distribution of IZR_PW_SOURCE (sample)\nby CASE_STATUS", sub="Rattle 2018-Feb-22 20:27:46 rohitravishankar", col=rev(colorspace::rainbow_hcl(5)), labels="", xlab="Frequency", ylab="IZR_PW_SOURCE", pch=c(1:4, 19))
+
+# Add a legend.
+
+legend("bottomright", bty="n", c("All","CERTIFIED","CERTIFIEDWITHDRAWN","DENIED","WITHDRAWN"), col=colorspace::rainbow_hcl(5), pch=c(19, 4:1))
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:32:49 x86_64-apple-darwin15.6.0 
+
+# Perform missing value imputation. 
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:32:49 x86_64-apple-darwin15.6.0 
+
+# Transform variables by imputing missing values. 
+
+# Impute RMD_TOTAL_WORKERS.
+
+crs$dataset[["IMN_RMD_TOTAL_WORKERS"]] <- crs$dataset[["RMD_TOTAL_WORKERS"]]
+
+# Change all NAs to the mean value (not advisable).
+
+if (building)
+{
+  crs$dataset[["IMN_RMD_TOTAL_WORKERS"]][is.na(crs$dataset[["RMD_TOTAL_WORKERS"]])] <- mean(crs$dataset[["RMD_TOTAL_WORKERS"]], na.rm=TRUE)
+}
+
+# When scoring, transform using the training data parameters:
+
+if (scoring)
+{
+  crs$dataset[["IMN_RMD_TOTAL_WORKERS"]][is.na(crs$dataset[["RMD_TOTAL_WORKERS"]])] <- NaN
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:32:52 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "VISA_CLASS",
+     "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE_YEAR", "PW_SOURCE_OTHER",
+     "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM",
+     "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "RMD_PREVAILING_WAGE", "BQ4_DECISION_MONTH",
+     "BQ4_CASE_SUBMITTED_YEAR", "R01_TOTAL_WORKERS", "RRC_TOTAL_WORKERS", "IZR_PW_SOURCE",
+     "IMN_RMD_TOTAL_WORKERS")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE", "RMD_PREVAILING_WAGE", "R01_TOTAL_WORKERS", "RRC_TOTAL_WORKERS",
+     "IMN_RMD_TOTAL_WORKERS")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE_OTHER",
+     "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "BQ4_DECISION_DAY",
+     "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR", "IZR_PW_SOURCE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("CASE_SUBMITTED_YEAR", "DECISION_DAY", "DECISION_MONTH", "TOTAL_WORKERS", "PREVAILING_WAGE", "PW_SOURCE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR", "RMD_TOTAL_WORKERS")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:33:10 x86_64-apple-darwin15.6.0 
+
+# CLEANUP the Dataset 
+
+# Remove specific variables from the dataset.
+
+crs$dataset$IMN_RMD_TOTAL_WORKERS <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:33:15 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "VISA_CLASS",
+     "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE_YEAR", "PW_SOURCE_OTHER",
+     "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM",
+     "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "RMD_PREVAILING_WAGE", "BQ4_DECISION_MONTH",
+     "BQ4_CASE_SUBMITTED_YEAR", "R01_TOTAL_WORKERS", "RRC_TOTAL_WORKERS", "IZR_PW_SOURCE")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE", "RMD_PREVAILING_WAGE", "R01_TOTAL_WORKERS", "RRC_TOTAL_WORKERS")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE_OTHER",
+     "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "BQ4_DECISION_DAY",
+     "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR", "IZR_PW_SOURCE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("CASE_SUBMITTED_YEAR", "DECISION_DAY", "DECISION_MONTH", "TOTAL_WORKERS", "PREVAILING_WAGE", "PW_SOURCE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR", "RMD_TOTAL_WORKERS")
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:33:50 x86_64-apple-darwin15.6.0 
+
+# Perform missing value imputation. 
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:33:50 x86_64-apple-darwin15.6.0 
+
+# Transform variables by imputing missing values. 
+
+# Impute RMD_TOTAL_WORKERS.
+
+crs$dataset[["IZR_RMD_TOTAL_WORKERS"]] <- crs$dataset[["RMD_TOTAL_WORKERS"]]
+
+# Change all NAs to 0.
+
+if (building)
+{
+  crs$dataset[["IZR_RMD_TOTAL_WORKERS"]][is.na(crs$dataset[["RMD_TOTAL_WORKERS"]])] <- 0
+}
+
+# When scoring, transform using the training data parameters:
+
+if (scoring)
+{
+  crs$dataset[["IZR_RMD_TOTAL_WORKERS"]][is.na(crs$dataset[["RMD_TOTAL_WORKERS"]])] <- 0
+}
+
+#============================================================
+# Rattle timestamp: 2018-02-22 20:33:53 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# The following variable selections have been noted.
+
+crs$input <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "VISA_CLASS",
+     "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY", "SOC_NAME",
+     "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE_YEAR", "PW_SOURCE_OTHER",
+     "WAGE_RATE_OF_PAY_TO", "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE",
+     "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM", "RMD_WAGE_RATE_OF_PAY_FROM",
+     "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE", "R01_PREVAILING_WAGE",
+     "BQ4_DECISION_DAY", "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "RMD_PREVAILING_WAGE", "BQ4_DECISION_MONTH",
+     "BQ4_CASE_SUBMITTED_YEAR", "R01_TOTAL_WORKERS", "RRC_TOTAL_WORKERS", "IZR_PW_SOURCE",
+     "IZR_RMD_TOTAL_WORKERS")
+
+crs$numeric <- c("CASE_SUBMITTED_DAY", "CASE_SUBMITTED_MONTH", "DECISION_YEAR", "PW_SOURCE_YEAR",
+     "WAGE_RATE_OF_PAY_TO", "IZR_NAICS_CODE", "RRC_WAGE_RATE_OF_PAY_FROM", "R01_WAGE_RATE_OF_PAY_FROM",
+     "RMD_WAGE_RATE_OF_PAY_FROM", "RLG_WAGE_RATE_OF_PAY_FROM", "RRK_WAGE_RATE_OF_PAY_FROM", "RRC_PREVAILING_WAGE",
+     "R01_PREVAILING_WAGE", "RMD_PREVAILING_WAGE", "R01_TOTAL_WORKERS", "RRC_TOTAL_WORKERS",
+     "IZR_RMD_TOTAL_WORKERS")
+
+crs$categoric <- c("VISA_CLASS", "EMPLOYER_NAME", "EMPLOYER_STATE", "EMPLOYER_COUNTRY",
+     "SOC_NAME", "FULL_TIME_POSITION", "PW_UNIT_OF_PAY", "PW_SOURCE_OTHER",
+     "WAGE_UNIT_OF_PAY", "WORKSITE_STATE", "WORKSITE_POSTAL_CODE", "BQ4_DECISION_DAY",
+     "TJN_H.1B_DEPENDENT_WILLFUL_VIOLATOR", "BQ4_DECISION_MONTH", "BQ4_CASE_SUBMITTED_YEAR", "IZR_PW_SOURCE")
+
+crs$target  <- "CASE_STATUS"
+crs$risk    <- NULL
+crs$ident   <- NULL
+crs$ignore  <- c("CASE_SUBMITTED_YEAR", "DECISION_DAY", "DECISION_MONTH", "TOTAL_WORKERS", "PREVAILING_WAGE", "PW_SOURCE", "WAGE_RATE_OF_PAY_FROM", "H.1B_DEPENDENT", "WILLFUL_VIOLATOR", "RMD_TOTAL_WORKERS")
+crs$weights <- NULL

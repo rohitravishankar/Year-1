@@ -1,0 +1,541 @@
+
+++++++++++++++++++++++++
+R Logs
+++++++++++++++++++++++++
+
+r <- read.csv("/Users/rohitravishankar/Desktop/Big Data/Assignment 2/crimes-in-chicago/Chicago_Crimes_2001_to_2004.csv", header = TRUE)
+dim(r)
+skewness(r[,c(1)], na.rm=TRUE)
+kurtosis(r[,c(1)], na.rm=TRUE)
+
+
+
+++++++++++++++++++++++++
+Rattle Logs
+++++++++++++++++++++++++
+
+# Rattle is Copyright (c) 2006-2017 Togaware Pty Ltd.
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:43:47 x86_64-apple-darwin15.6.0 
+
+# Rattle version 5.0.14 user 'rohitravishankar'
+
+# This log file captures all Rattle interactions as R commands. 
+
+# Export this log to a file using the Export button or the Tools menu to save a log 
+# of all your activity. This facilitates repeatability. For example, exporting 
+# to a file called 'myrf01.R' will allow you to type in the R Console 
+# the command source('myrf01.R') and so repeat all actions automatically. 
+# Generally, you will want to edit the file to suit your needs. You can also directly 
+# edit this current log in place to record additional information before exporting. 
+ 
+# Saving and loading projects also retains this log.
+
+# We begin by loading the required libraries.
+
+library(rattle)   # To access the weather dataset and utility commands.
+library(magrittr) # For the %>% and %<>% operators.
+
+# This log generally records the process of building a model. However, with very 
+# little effort the log can be used to score a new dataset. The logical variable 
+# 'building' is used to toggle between generating transformations, as when building 
+# a model, and simply using the transformations, as when scoring a dataset.
+
+building <- TRUE
+scoring  <- ! building
+
+
+# A pre-defined value is used to reset the random seed so that results are repeatable.
+
+crv$seed <- 42 
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:44:02 x86_64-apple-darwin15.6.0 
+
+# Load the data.
+
+crs$dataset <- read.csv("file:///Users/rohitravishankar/Desktop/Big Data/Assignment 2/crimes-in-chicago/Chicago_Crimes_2001_to_2004.csv", na.strings=c(".", "NA", "", "?"), strip.white=TRUE, encoding="UTF-8")
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:46:29 x86_64-apple-darwin15.6.0 
+
+# Note the user selections. 
+
+# Build the training/validate/test datasets.
+
+set.seed(crv$seed) 
+crs$nobs <- nrow(crs$dataset) # 1923517 observations 
+crs$sample <- crs$train <- sample(nrow(crs$dataset), 0.7*crs$nobs) # 1346461 observations
+crs$validate <- sample(setdiff(seq_len(nrow(crs$dataset)), crs$train), 0.15*crs$nobs) # 288527 observations
+crs$test <- setdiff(setdiff(seq_len(nrow(crs$dataset)), crs$train), crs$validate) # 288529 observations
+
+# The following variable selections have been noted.
+
+crs$input <- c("X", "Case.Number", "Date", "Block",
+     "IUCR", "Primary.Type", "Description", "Location.Description",
+     "Domestic", "Beat", "District", "Ward",
+     "Community.Area", "FBI.Code", "X.Coordinate", "Y.Coordinate",
+     "Year", "Updated.On", "Latitude", "Longitude",
+     "Location")
+
+crs$numeric <- NULL
+
+crs$categoric <- c("X", "Case.Number", "Date", "Block",
+     "IUCR", "Primary.Type", "Description", "Location.Description",
+     "Domestic", "Beat", "District", "Ward",
+     "Community.Area", "FBI.Code", "X.Coordinate", "Y.Coordinate",
+     "Year", "Updated.On", "Latitude", "Longitude",
+     "Location")
+
+crs$target  <- "Arrest"
+crs$risk    <- NULL
+crs$ident   <- "ID"
+crs$ignore  <- NULL
+crs$weights <- NULL
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:46:59 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:46:59 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Year)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="Year", ylim=c(0, 477751), col=colorspace::rainbow_hcl(1))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+15925, ds[,ord])
+
+# Add a title to the plot.
+
+title(main="Distribution of Year (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:47:29 x86_64-apple-darwin15.6.0 
+
+# Mosaic Plot 
+
+# Generate the table data for plotting.
+
+ds <- table(crs$dataset[crs$sample,]$Domestic, crs$dataset[crs$sample,]$Arrest)
+
+# Sort the entries.
+
+ord <- order(apply(ds, 1, sum), decreasing=TRUE)
+
+# Plot the data.
+
+mosaicplot(ds[ord,], main="Mosaic of Domestic (sample)
+by Arrest", sub="Rattle 2018-Feb-14 10:47:32 rohitravishankar", color=colorspace::rainbow_hcl(4)[-1], cex=0.7, xlab="Domestic", ylab="Arrest")
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:48:03 x86_64-apple-darwin15.6.0 
+
+# Dot Plot 
+
+# Generate the summary data for the plot.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Primary.Type)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="False",]$Primary.Type)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="Location Description",]$Primary.Type)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="True",]$Primary.Type)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+dotchart(ds[nrow(ds):1,ord], main="Distribution of Primary.Type (sample)\nby Arrest", sub="Rattle 2018-Feb-14 10:48:17 rohitravishankar", col=rev(colorspace::rainbow_hcl(4)), labels="", xlab="Frequency", ylab="Primary.Type", pch=c(1:3, 19))
+
+# Add a legend.
+
+legend("bottomright", bty="n", c("All","False","Location Description","True"), col=colorspace::rainbow_hcl(4), pch=c(19, 3:1))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:48:52 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:48:52 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="False",]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="Location Description",]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="True",]$Location.Description)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="Location.Description", ylim=c(0, 490547), col=colorspace::rainbow_hcl(4))
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","False","Location Description","True"),  fill=colorspace::rainbow_hcl(4))
+
+# Add a title to the plot.
+
+title(main="Distribution of Location.Description (sample)\nby Arrest",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:49:17 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:49:17 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Location.Description)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="Location.Description", ylim=c(0, 490547), col=colorspace::rainbow_hcl(1))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+16352, ds[,ord])
+
+# Add a title to the plot.
+
+title(main="Distribution of Location.Description (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:49:28 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:49:28 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Year=="2001",]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Year=="2002",]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Year=="2003",]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Year=="2004",]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Year=="41.789832136",]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Year=="Y Coordinate",]$Location.Description)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="Location.Description", ylim=c(0, 490547), col=colorspace::rainbow_hcl(7))
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","2001","2002","2003","2004","41.789832136","Y Coordinate"),  fill=colorspace::rainbow_hcl(7))
+
+# Add a title to the plot.
+
+title(main="Distribution of Location.Description (sample)\nby Year",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:50:02 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:50:02 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Location.Description)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="Location.Description", ylim=c(0, 490547), col=colorspace::rainbow_hcl(1))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+16352, ds[,ord])
+
+# Add a title to the plot.
+
+title(main="Distribution of Location.Description (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:50:14 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:50:14 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="False",]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="Location Description",]$Location.Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="True",]$Location.Description)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="Location.Description", ylim=c(0, 490547), col=colorspace::rainbow_hcl(4))
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","False","Location Description","True"),  fill=colorspace::rainbow_hcl(4))
+
+# Add a title to the plot.
+
+title(main="Distribution of Location.Description (sample)\nby Arrest",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:52:29 x86_64-apple-darwin15.6.0 
+
+# Dot Plot 
+
+# Generate the summary data for the plot.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="False",]$Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="Location Description",]$Description)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="True",]$Description)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+dotchart(ds[nrow(ds):1,ord], main="Distribution of Description (sample)\nby Arrest", sub="Rattle 2018-Feb-14 10:52:40 rohitravishankar", col=rev(colorspace::rainbow_hcl(4)), labels="", xlab="Frequency", ylab="Description", pch=c(1:3, 19))
+
+# Add a legend.
+
+legend("bottomright", bty="n", c("All","False","Location Description","True"), col=colorspace::rainbow_hcl(4), pch=c(19, 3:1))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:53:39 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:53:39 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Domestic)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="False",]$Domestic)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="Location Description",]$Domestic)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="True",]$Domestic)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="Domestic", ylim=c(0, 1422326), col=colorspace::rainbow_hcl(4))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+47411, ds[,ord])
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","False","Location Description","True"),  fill=colorspace::rainbow_hcl(4))
+
+# Add a title to the plot.
+
+title(main="Distribution of Domestic (sample)\nby Arrest",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:53:53 x86_64-apple-darwin15.6.0 
+
+# Dot Plot 
+
+# Generate the summary data for the plot.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Domestic)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="False",]$Domestic)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="Location Description",]$Domestic)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="True",]$Domestic)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+dotchart(ds[nrow(ds):1,ord], main="Distribution of Domestic (sample)\nby Arrest", sub="Rattle 2018-Feb-14 10:54:04 rohitravishankar", col=rev(colorspace::rainbow_hcl(4)), labels="", xlab="Frequency", ylab="Domestic", pch=c(1:3, 19))
+
+# Add a legend.
+
+legend("bottomright", bty="n", c("All","False","Location Description","True"), col=colorspace::rainbow_hcl(4), pch=c(19, 3:1))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:54:25 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:54:25 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Domestic)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="False",]$Domestic)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="Location Description",]$Domestic)),
+    summary(na.omit(crs$dataset[crs$sample,][crs$dataset[crs$sample,]$Arrest=="True",]$Domestic)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="Domestic", ylim=c(0, 1422326), col=colorspace::rainbow_hcl(4))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+47411, ds[,ord])
+
+# Add a legend to the plot.
+
+legend("topright", bty="n", c("All","False","Location Description","True"),  fill=colorspace::rainbow_hcl(4))
+
+# Add a title to the plot.
+
+title(main="Distribution of Domestic (sample)\nby Arrest",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:55:14 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:55:14 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Domestic)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="Domestic", ylim=c(0, 1422326), col=colorspace::rainbow_hcl(1))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+47411, ds[,ord])
+
+# Add a title to the plot.
+
+title(main="Distribution of Domestic (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:56:25 x86_64-apple-darwin15.6.0 
+
+# The 'gplots' package provides the 'barplot2' function.
+
+library(gplots, quietly=TRUE)
+
+#============================================================
+# Rattle timestamp: 2018-02-14 10:56:25 x86_64-apple-darwin15.6.0 
+
+# Bar Plot 
+
+# Generate the summary data for plotting.
+
+ds <- rbind(summary(na.omit(crs$dataset[crs$sample,]$Updated.On)))
+
+# Sort the entries.
+
+ord <- order(ds[1,], decreasing=TRUE)
+
+# Plot the data.
+
+bp <-  barplot2(ds[,ord], beside=TRUE, ylab="Frequency", xlab="Updated.On", ylim=c(0, 1113454), col=colorspace::rainbow_hcl(1))
+
+# Add the actual frequencies.
+
+text(bp, ds[,ord]+37115, ds[,ord])
+
+# Add a title to the plot.
+
+title(main="Distribution of Updated.On (sample)",
+    sub=paste("Rattle", format(Sys.time(), "%Y-%b-%d %H:%M:%S"), Sys.info()["user"]))

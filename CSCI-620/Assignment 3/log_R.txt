@@ -1,0 +1,15 @@
+library(rattle)
+rattle()
+r <- read.csv("/Users/rohitravishankar/Desktop/Big Data/Assignment 3/h1b-disclosure-dataset/H1B Disclosure Dataset Files/File 1 - H1B Dataset.csv", header = TRUE)
+tail(r, N=1)
+View(tail(r, N=1))
+ds <- weather
+ds$RRC_Temp3pm <- scale(ds$Temp3pm)
+library(reshape)
+ds$R01_Temp3pm <- rescaler(ds$Temp3pm, "range")
+library(reshape)
+ds$RMD_Temp3pm <- rescaler(ds$Temp3pm, "robust")
+ds$RLG_Temp3pm <- log(ds$Temp3pm)
+ds$RLG_Temp3pm[ds$RLG_Temp3pm == -Inf] <- NA
+library(reshape)
+ds$RRK_Temp3pm <- rescaler(ds$Temp3pm, "rank")
